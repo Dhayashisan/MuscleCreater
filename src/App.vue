@@ -1,12 +1,14 @@
 <script setup>
 import { ref } from 'vue'
-import TrainingView from '@/compornents/TraningView.vue'
+import TraningView from '@/compornents/TraningView.vue';
 const isTraining = ref(false)
 
 const showTraining = () => {
   console.log('test');
   isTraining.value = true;
 }
+
+
 </script>
 <!--マッスル個人的プログラム-->
 <!--簡易設計-->
@@ -24,16 +26,16 @@ const showTraining = () => {
       <h1>Welcome!!!PokochinMuscleSchoooooooooooooool!!!!</h1>
     </div>
     <div class="top"></div>
-    <div class="main-contents">
-      <button @click="showTraining()">Training</button>
-
+  <!-- メニュー画面 -->
+    <div v-if="!isTraining" class="main-contents">
+      <button @click="showTraining">Training</button>
       <button>Edit</button>
       <button>Maintenance</button>
       <button>Graph</button>
     </div>
-    <div class="sub-contents"></div>
-    <div class="bottom"></div>
-    <div class="footer"></div>
+
+    <!-- Training画面 -->
+    <TraningView v-else />
   </main>
 </template>
 

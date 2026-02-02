@@ -1,4 +1,4 @@
-<script setup></script>
+<script setup>
 <!--マッスル個人的プログラム-->
 <!--簡易設計-->
 <!--画面は「当日記入画面」「編集画面」「メンテナンス画面」「グラフ画面」-->
@@ -10,14 +10,20 @@
 <!--★気を付けること-->
 <!--淡々とトレーニングをこなせる様、余計な機能を省くこと-->
 
+//const onClick=(name)=>{
+//if(name == "isTraning"){
+//
+//}
+//}
+</script>
+
 <template>
   <main>
     <div class="header">
       <h1>Welcome!!!PokochinMuscleSchoooooooooooooool!!!!</h1>
     </div>
-    <div class="top"><h1>Menu</h1></div>
+    <div class="top"></div>
     <div class="main-contents">
-      <button>Traning</button>
       <button>Edit</button>
       <button>Maintenance</button>
       <button>Graph</button>

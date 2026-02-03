@@ -14,8 +14,12 @@ const isTop = () => {
 
 // OKボタンでDBに登録
 const isOK = async () => {
+  if (!exercise.value || !weight.value || !reps.value) {
+  alert('種目・重量・回数は必須です')
+  return
+}
   await supabase
-    .from('TrainingDatabase') // 作成したテーブル名
+    .from('TraningDatabase') // 作成したテーブル名
     .insert([
       {
         userid: 'testuser',

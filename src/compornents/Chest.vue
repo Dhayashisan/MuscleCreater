@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { supabase } from '../supabase'
+import { supabase } from '../utils/supabase'
 const emit = defineEmits(['go-top'])
 // フォームのデータをrefで管理
 const exercise = ref('')
@@ -15,28 +15,27 @@ const isTop = () => {
 // OKボタンでDBに登録
 const isOK = async () => {
   if (!exercise.value || !weight.value || !reps.value) {
-  alert('種目・重量・回数は必須です')
-  return
-}
+    alert('種目・重量・回数は必須です')
+    return
+  }
   await supabase
     .from('TraningDatabase') // 作成したテーブル名
-    .insert([
+    .insert(
       {
-        userid: 'testuser',
-        training_date:null,
-        muscle_group:null,
+        userid: parseFloat(1),
+        training_date: new Date().toISOString(),
+        muscle_group: '胸',
         exercise: exercise.value,
         weight: parseFloat(weight.value),
-        sets:null,
+        sets: parseInt(1),
         reps: parseInt(reps.value),
         comment: comment.value,
       },
-    ])
+    )
 }
 </script>
 
 <template>
-
   <h2>ChestDay</h2>
   <div class="header">
     <button @click="isTop">Top</button>

@@ -1,15 +1,15 @@
 <script setup>
 
-const iscancel= () => {
-  console.log('test');
-  isTraining.value = true;
+const emit = defineEmits(['close-training'])
+const iscancel = () => {
+  emit('close-training')
 }
 </script>
 
 <template>
   <section class="training">
     <h2>Training</h2>
-    <button @click="iscancel()">cancel</button>
+    <button @click="iscancel">cancel</button>
   </section>
 </template>
 

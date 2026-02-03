@@ -1,14 +1,17 @@
 <script setup>
 import { ref } from 'vue'
-import TraningView from '@/compornents/TraningView.vue';
+import TraningView from '@/compornents/TraningView.vue'
 const isTraining = ref(false)
 
 const showTraining = () => {
-  console.log('test');
-  isTraining.value = true;
+  console.log('test')
+  isTraining.value = true
 }
 
-
+const closeTraining = () => {
+  console.log('test')
+  isTraining.value = false
+}
 </script>
 <!--マッスル個人的プログラム-->
 <!--簡易設計-->
@@ -22,20 +25,21 @@ const showTraining = () => {
 <!--淡々とトレーニングをこなせる様、余計な機能を省くこと-->
 <template>
   <main>
-    <div class="header">
-      <h1>Welcome!!!PokochinMuscleSchoooooooooooooool!!!!</h1>
-    </div>
     <div class="top"></div>
-  <!-- メニュー画面 -->
+    <!-- メニュー画面 -->
+    <div v-if="isTraining" class="main-contents">
+      <!-- Training画面 -->
+      <TraningView @close-training="closeTraining" />
+    </div>
     <div v-if="!isTraining" class="main-contents">
+      <div class="header">
+        <h1>Welcome!!!PokochinMuscleSchoooooooooooooool!!!!</h1>
+      </div>
       <button @click="showTraining">Training</button>
       <button>Edit</button>
       <button>Maintenance</button>
       <button>Graph</button>
     </div>
-
-    <!-- Training画面 -->
-    <TraningView v-else />
   </main>
 </template>
 

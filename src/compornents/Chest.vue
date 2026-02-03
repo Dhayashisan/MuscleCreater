@@ -1,15 +1,18 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from '../utils/supabase'
-import { toJST } from '@/common/util'
+import { toJST, startRestTimer } from '@/common/util'
 
 const emit = defineEmits(['go-top'])
 // フォームのデータをrefで管理
 const exercise = ref('')
 const weight = ref('')
+const sets = ref('')
 const reps = ref('')
 const comment = ref('')
 const trainings = ref([])
+const restSeconds = ref(0)
+let timerId = null
 
 // 画面表示時に取得
 onMounted(() => {
@@ -50,10 +53,30 @@ const isOK = async () => {
       muscle_group: '胸',
       exercise: exercise.value,
       weight: parseFloat(weight.value),
-      sets: parseInt(1),
+      sets: parseInt(sets.value),
       reps: parseInt(reps.value),
       comment: comment.value,
     })
+
+  startRestTimer({
+    seconds: 10,
+    onTick: (sec) => {
+      restSeconds.value = sec
+    },
+    onFinish: () => {
+      alert('おちんちんがふっくらしてきたよ！')
+      fetchTrainings()
+      resetForm()
+    },
+  })
+}
+
+const resetForm = () => {
+  exercise.value = ''
+  weight.value = ''
+  sets.value = ''
+  reps.value = ''
+  comment.value = ''
 }
 </script>
 
@@ -67,6 +90,11 @@ const isOK = async () => {
       <div class="row">
         <label>種目</label>
         <input type="text" placeholder="ベンチプレス" v-model="exercise" />
+      </div>
+
+      <div class="row">
+        <label>セット</label>
+        <input type="text" v-model="sets" />
       </div>
 
       <div class="row">
@@ -96,6 +124,7 @@ const isOK = async () => {
 
       <div v-for="t in trainings" :key="t.id" class="row">
         <div>日付：{{ toJST(t.training_date) }}</div>
+        <div>セット：{{ t.sets }}</div>
         <div>種目：{{ t.exercise }}</div>
         <div>重量：{{ t.weight }} kg</div>
         <div>回数：{{ t.reps }} 回</div>
@@ -104,6 +133,7 @@ const isOK = async () => {
       </div>
     </div>
   </div>
+  <div v-if="restSeconds > 0" class="timer-box">インターバル：{{ restSeconds }} 秒</div>
 </template>
 
 <style scoped>

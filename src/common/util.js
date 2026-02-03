@@ -17,3 +17,34 @@ export const toJST = (utcString) => {
     minute: '2-digit',
   })
 }
+
+
+// アラート音再生
+export const playAlertSound = () => {
+  const audio = new Audio('/alarm.mp3') // public/alarm.mp3
+  audio.play()
+}
+
+// 休憩タイマー（秒数・終了コールバック付き）
+export const startRestTimer = ({
+  seconds = 10,
+  onTick,
+  onFinish,
+}) => {
+  let remaining = seconds
+
+  onTick?.(remaining)
+
+  const timerId = setInterval(() => {
+    remaining--
+    onTick?.(remaining)
+
+    if (remaining <= 0) {
+      clearInterval(timerId)
+      playAlertSound()
+      onFinish?.()
+    }
+  }, 1000)
+
+  return timerId
+}

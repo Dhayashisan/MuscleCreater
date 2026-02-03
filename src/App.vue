@@ -1,16 +1,16 @@
 <script setup>
 import { ref } from 'vue'
 import TraningView from '@/compornents/TraningView.vue'
-const isTraining = ref(false)
+const isMode = ref(false)
 
 const showTraining = () => {
   console.log('test')
-  isTraining.value = true
+  isMode.value = true
 }
 
 const closeTraining = () => {
   console.log('test')
-  isTraining.value = false
+  isMode.value = false
 }
 </script>
 <!--マッスル個人的プログラム-->
@@ -27,11 +27,11 @@ const closeTraining = () => {
   <main>
     <div class="top"></div>
     <!-- メニュー画面 -->
-    <div v-if="isTraining" class="main-contents">
+    <div v-if="isMode" class="main-contents">
       <!-- Training画面 -->
       <TraningView @close-training="closeTraining" />
     </div>
-    <div v-if="!isTraining" class="main-contents">
+    <div v-if="!isMode" class="main-contents">
       <div class="header">
         <h1>Welcome!!!PokochinMuscleSchoooooooooooooool!!!!</h1>
       </div>

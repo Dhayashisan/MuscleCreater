@@ -12,6 +12,7 @@ const reps = ref('')
 const comment = ref('')
 const trainings = ref([])
 const restSeconds = ref(0)
+const videoUrl = ref('')
 let timerId = null
 
 // 画面表示時に取得
@@ -78,6 +79,11 @@ const resetForm = () => {
   reps.value = ''
   comment.value = ''
 }
+
+// youtubeの音楽を探す
+const musicOn = () => {
+  window.open('https://www.youtube.com/watch?v=zLpsmg3W1qE', '_blank')
+}
 </script>
 
 <template>
@@ -134,15 +140,11 @@ const resetForm = () => {
     </div>
   </div>
   <div v-if="restSeconds > 0" class="timer-box">インターバル：{{ restSeconds }} 秒</div>
+
+  <button @click="musicOn">Music On</button>
 </template>
 
 <style scoped>
-.training {
-  padding: 20px;
-  background-color: #121212;
-  color: #e0e0e0;
-}
-
 /* 枠線 */
 .training-box {
   margin-top: 20px;
@@ -184,5 +186,6 @@ textarea {
 
 .flex-box {
   display: flex;
+  width: 1080px;
 }
 </style>

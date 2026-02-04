@@ -1,7 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { supabase } from '../utils/supabase'
 import { toJST, startRestTimer } from '@/common/util'
+import ChestExerciseSelect from '@/parts/ChestExerciseSelect.vue'
+//import { chestJson } from '@/common/exercise'
 
 const emit = defineEmits(['go-top'])
 // フォームのデータをrefで管理
@@ -13,29 +15,65 @@ const comment = ref('')
 const trainings = ref([])
 const restSeconds = ref(0)
 const videoUrl = ref('')
+const cautionMessage = ref('')
 let timerId = null
 
-// 画面表示時に取得
-onMounted(() => {
-  fetchTrainings()
+// 選んだ種目、セット目によって取得先を変更する処理
+watch([exercise, sets], ([newExercise, newSets]) => {
+  // 両方そろってから取得
+  if (!newExercise || !newSets) {
+    trainings.value = []
+    return
+  }
+
+  fetchTrainings(newExercise, parseInt(newSets))
+})
+
+// 選んだ種目により、フォームを意識づける
+watch(exercise, (newVal) => {
+  switch (newVal) {
+    case 'ベンチプレス':
+      cautionMessage.value = '⚠️ 肩甲骨を寄せて胸を張り、補助バーとセーフティを必ず確認してください'
+      break
+
+    case 'インクラインダンベルプレス':
+      cautionMessage.value = '⚠️ ベンチ角度は30〜45度。反動を使わずコントロール重視で'
+      break
+
+    case 'ダンベルフライ':
+      cautionMessage.value = '⚠️ 肘を伸ばし切らず、肩に過度なストレスをかけないよう注意'
+      break
+
+    case '腕立て伏せ':
+      cautionMessage.value = '⚠️ 体幹を一直線に保ち、腰が反らないよう意識してください'
+      break
+
+    default:
+      cautionMessage.value = ''
+  }
 })
 
 // トレーニングのデータを取得
-const fetchTrainings = async () => {
+const fetchTrainings = async (exerciseName, setCount) => {
   const { data, error } = await supabase
     .from('TraningDatabase')
     .select('*')
     .eq('muscle_group', '胸')
+    .eq('exercise', exerciseName)
+    .eq('sets', setCount)
     .order('training_date', { ascending: false })
     .limit(1)
+
   if (error) {
     console.error('取得エラー', error)
+    trainings.value = []
     return
   }
 
   trainings.value = data
 }
 
+// Top画面へ遷移する。
 const isTop = () => {
   emit('go-top')
 }
@@ -53,9 +91,9 @@ const isOK = async () => {
       training_date: new Date().toISOString(),
       muscle_group: '胸',
       exercise: exercise.value,
-      weight: parseFloat(weight.value),
+      weight: weight.value,
       sets: parseInt(sets.value),
-      reps: parseInt(reps.value),
+      reps: reps.value,
       comment: comment.value,
     })
 
@@ -72,12 +110,17 @@ const isOK = async () => {
   })
 }
 
+// 初期化処理
 const resetForm = () => {
   exercise.value = ''
   weight.value = ''
   sets.value = ''
   reps.value = ''
   comment.value = ''
+}
+const isContinue = () => {
+  sets.value = ''
+  reps.value = ''
 }
 
 // youtubeの音楽を探す
@@ -95,7 +138,10 @@ const musicOn = () => {
     <div class="training-box">
       <div class="row">
         <label>種目</label>
-        <input type="text" placeholder="ベンチプレス" v-model="exercise" />
+        <ChestExerciseSelect v-model="exercise" />
+      </div>
+      <div v-if="cautionMessage" class="caution">
+        {{ cautionMessage }}
       </div>
 
       <div class="row">
@@ -118,8 +164,9 @@ const musicOn = () => {
         <textarea placeholder="フォーム・感覚など" v-model="comment"></textarea>
       </div>
 
-      <div class="row">
+      <div class="flex-row">
         <button @click="isOK">OK</button>
+        <button @click="isContinue">ちんちん</button>
       </div>
     </div>
 
@@ -187,5 +234,9 @@ textarea {
 .flex-box {
   display: flex;
   width: 1080px;
+}
+
+.flex-row {
+  display: flex;
 }
 </style>

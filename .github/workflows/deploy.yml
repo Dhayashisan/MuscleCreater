@@ -2,7 +2,10 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # mainブランチにプッシュしたら起動
+    branches: [ main ]
+
+permissions:
+  contents: write   # ← ★これが必須★
 
 jobs:
   build-and-deploy:
@@ -20,9 +23,9 @@ jobs:
         run: |
           npm install
           npm run build
-          
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist # Viteが書き出したフォルダを公開する
-          branch: gh-pages # 公開用の専用ブランチに自動で送る
+          branch: gh-pages
+          folder: dist

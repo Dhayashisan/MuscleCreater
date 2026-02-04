@@ -26,7 +26,7 @@ export const toHalfWidthNumber = (value) => {
 
 // アラート音再生
 export const playAlertSound = () => {
-  const audio = new Audio('/alarm.mp3') // public/alarm.mp3
+  const audio = new Audio('public/nakigoe.mp3') // public/nakigoe.mp3
   audio.play()
 }
 

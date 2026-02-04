@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { supabase } from '../utils/supabase'
 import { toJST, startRestTimer } from '@/common/util'
 import ChestExerciseSelect from '@/parts/ChestExerciseSelect.vue'
-//import { chestJson } from '@/common/exercise'
+import cautionMessages from '@/common/cautionMessages.json'
 
 const emit = defineEmits(['go-top'])
 // フォームのデータをrefで管理
@@ -16,6 +16,8 @@ const trainings = ref([])
 const restSeconds = ref(0)
 const videoUrl = ref('')
 const cautionMessage = ref('')
+const showCautionScreen = ref(false)
+const showCautionSidebar = ref(false)
 let timerId = null
 
 // 選んだ種目、セット目によって取得先を変更する処理
@@ -33,23 +35,25 @@ watch([exercise, sets], ([newExercise, newSets]) => {
 watch(exercise, (newVal) => {
   switch (newVal) {
     case 'ベンチプレス':
-      cautionMessage.value = '⚠️ 肩甲骨を寄せて胸を張り、補助バーとセーフティを必ず確認してください'
+      cautionMessage.value = cautionMessages.BP
       break
-
     case 'インクラインダンベルプレス':
-      cautionMessage.value = '⚠️ ベンチ角度は30〜45度。反動を使わずコントロール重視で'
+      cautionMessage.value = cautionMessages.INDBFLY
       break
-
     case 'ダンベルフライ':
-      cautionMessage.value = '⚠️ 肘を伸ばし切らず、肩に過度なストレスをかけないよう注意'
+      cautionMessage.value = cautionMessages.DBFLY
       break
-
     case '腕立て伏せ':
-      cautionMessage.value = '⚠️ 体幹を一直線に保ち、腰が反らないよう意識してください'
+      cautionMessage.value = cautionMessages.PUSHUP
       break
-
     default:
       cautionMessage.value = ''
+      return
+  }
+
+  // 注意メッセージがあればフルスクリーン表示
+  if (cautionMessage.value) {
+    showCautionScreen.value = true
   }
 })
 
@@ -79,7 +83,7 @@ const isTop = () => {
 }
 
 // OKボタンでDBに登録
-const isOK = async () => {
+const isOK = async (flag) => {
   if (!exercise.value || !weight.value || !reps.value) {
     alert('種目・重量・回数は必須です')
     return
@@ -103,9 +107,14 @@ const isOK = async () => {
       restSeconds.value = sec
     },
     onFinish: () => {
-      alert('おちんちんがふっくらしてきたよ！')
+      alert('インターバル終了')
       fetchTrainings()
-      resetForm()
+      // OKなら次の種目　継続なら必要な値を保持
+      if (flag === 'insert') {
+        resetForm()
+      } else {
+        isContinue()
+      }
     },
   })
 }
@@ -119,17 +128,38 @@ const resetForm = () => {
   comment.value = ''
 }
 const isContinue = () => {
-  sets.value = ''
+  // 継続ならセット数を前回入力した値から＋１したい
+  sets.value = parseInt(sets.value) + parseInt(1)
   reps.value = ''
+  comment.value = ''
 }
 
 // youtubeの音楽を探す
 const musicOn = () => {
   window.open('https://www.youtube.com/watch?v=zLpsmg3W1qE', '_blank')
 }
+
+const startTraining = () => {
+  showCautionScreen.value = false
+  showCautionSidebar.value = true
+}
 </script>
 
 <template>
+  <!-- フルスクリーン注意画面 -->
+  <div v-if="showCautionScreen" class="caution-screen">
+    <div class="caution-content">
+      <h2>⚠️ トレーニング前の注意 ⚠️</h2>
+      <p>{{ cautionMessage }}</p>
+      <button @click="startTraining">トレーニング開始</button>
+    </div>
+  </div>
+
+  <!-- 右端注意パネル -->
+  <div v-if="showCautionSidebar" class="caution-sidebar">
+    <h3>⚠️ 注意 ⚠️</h3>
+    <p>{{ cautionMessage }}</p>
+  </div>
   <h2>ChestDay</h2>
   <div class="header">
     <button @click="isTop">Top</button>
@@ -139,9 +169,6 @@ const musicOn = () => {
       <div class="row">
         <label>種目</label>
         <ChestExerciseSelect v-model="exercise" />
-      </div>
-      <div v-if="cautionMessage" class="caution">
-        {{ cautionMessage }}
       </div>
 
       <div class="row">
@@ -165,8 +192,8 @@ const musicOn = () => {
       </div>
 
       <div class="flex-row">
-        <button @click="isOK">OK</button>
-        <button @click="isContinue">ちんちん</button>
+        <button @click="isOK('insert')">OK</button>
+        <button @click="isOK('continue')">継続</button>
       </div>
     </div>
 
@@ -238,5 +265,76 @@ textarea {
 
 .flex-row {
   display: flex;
+}
+
+/* フルスクリーン */
+.caution-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: #fff;
+}
+
+.caution-content {
+  max-width: 600px;
+  text-align: center;
+  padding: 32px;
+  border: 2px solid #ff5555;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+}
+
+.caution-content h2 {
+  margin-bottom: 20px;
+  color: #ff5555;
+}
+
+.caution-content p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.caution-content button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #ff5555;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* 右端注意パネル */
+.caution-sidebar {
+  position: fixed;
+  top: 20px;
+  right: 500px;
+  width: 500px;
+  max-width: 100%;
+  background-color: #1e1e1e;
+  border: 2px solid #ff5555;
+  padding: 16px;
+  border-radius: 8px;
+  color: #fff;
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.caution-sidebar h3 {
+  margin-bottom: 10px;
+  color: #ff5555;
+}
+
+.caution-sidebar p {
+  font-size: 14px;
+  line-height: 1.4;
 }
 </style>

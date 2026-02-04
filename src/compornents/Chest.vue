@@ -5,37 +5,37 @@ import { toJST, startRestTimer, toHalfWidthNumber } from '@/common/util'
 import ChestExerciseSelect from '@/parts/ChestExerciseSelect.vue'
 import cautionMessages from '@/common/cautionMessages.json'
 
+// emitイベント定義（親コンポーネントにTop遷移を通知）
 const emit = defineEmits(['go-top'])
-// フォームのデータをrefで管理
-const exercise = ref('')
-const weight = ref('')
-const sets = ref('')
-const reps = ref('')
-const comment = ref('')
-const trainings = ref([])
-const restSeconds = ref(0)
-const cautionMessage = ref('')
-const showCautionScreen = ref(false)
-const showCautionSidebar = ref(false)
 
-// トレーニングを開始する前にフォームを意識づけるスクリーンを表示する。
+// フォームデータをrefで管理
+const exercise = ref('') // 種目
+const weight = ref('')   // 重量
+const sets = ref('')     // セット数
+const reps = ref('')     // 回数
+const comment = ref('')  // メモ
+const trainings = ref([]) // DBから取得した過去トレーニング
+const restSeconds = ref(0) // インターバルタイマー
+const cautionMessage = ref('') // 注意メッセージ
+const showCautionScreen = ref(false) // フルスクリーン注意表示
+const showCautionSidebar = ref(false) // 右側注意パネル表示
+
+// トレーニング開始ボタン押下時の処理
 const startTraining = () => {
   showCautionScreen.value = false
   showCautionSidebar.value = true
 }
 
-// 選んだ種目、セット目によって取得先を変更する処理
+// 選択種目 or セット数が変わったときDBから過去データ取得
 watch([exercise, sets], ([newExercise, newSets]) => {
-  // 両方そろってから取得
   if (!newExercise || !newSets) {
     trainings.value = []
     return
   }
-
   fetchTrainings(newExercise, parseInt(newSets))
 })
 
-// 選んだ種目により、フォームを意識づける
+// 種目選択に応じて注意メッセージをセット
 watch(exercise, (newVal) => {
   switch (newVal) {
     case 'ベンチプレス':
@@ -61,7 +61,7 @@ watch(exercise, (newVal) => {
   }
 })
 
-// トレーニングのデータを取得
+// DBから過去のトレーニングを取得
 const fetchTrainings = async (exerciseName, setCount) => {
   const { data, error } = await supabase
     .from('TraningDatabase')
@@ -81,14 +81,14 @@ const fetchTrainings = async (exerciseName, setCount) => {
   trainings.value = data
 }
 
-// OKボタンでDBに登録
+// OKボタン押下時の処理（DB登録＋インターバルタイマー）
 const isOK = async (flag) => {
   if (!exercise.value || !weight.value || !reps.value) {
     alert('種目・重量・回数は必須です')
     return
   }
   await supabase
-    .from('TraningDatabase') // 作成したテーブル名
+    .from('TraningDatabase')
     .insert({
       userid: parseFloat(1),
       training_date: new Date().toISOString(),
@@ -100,6 +100,7 @@ const isOK = async (flag) => {
       comment: comment.value,
     })
 
+  // 休憩タイマー開始
   startRestTimer({
     seconds: 10,
     onTick: (sec) => {
@@ -108,7 +109,7 @@ const isOK = async (flag) => {
     onFinish: () => {
       alert('インターバル終了')
       fetchTrainings()
-      // OKなら次の種目　継続なら必要な値を保持
+      // OKならフォームリセット、継続ならセット数+1
       if (flag === 'insert') {
         resetForm()
       } else {
@@ -118,7 +119,7 @@ const isOK = async (flag) => {
   })
 }
 
-// 初期化処理
+// フォームを初期化
 const resetForm = () => {
   exercise.value = ''
   weight.value = ''
@@ -127,19 +128,19 @@ const resetForm = () => {
   comment.value = ''
 }
 
-// もし継続ならセット数を前回入力した値から＋１する関数
+// 継続ボタン押下時：セット数+1、回数とコメントはクリア
 const isContinue = () => {
   sets.value = parseInt(sets.value) + parseInt(1)
   reps.value = ''
   comment.value = ''
 }
 
-// youtubeの音楽を探す
+// YouTubeを開く
 const musicOn = () => {
   window.open('https://www.youtube.com/watch?v=zLpsmg3W1qE', '_blank')
 }
 
-// Top画面へ遷移する。
+// Top画面へ遷移
 const isTop = () => {
   emit('go-top')
 }
@@ -150,7 +151,7 @@ const isTop = () => {
   <div v-if="showCautionScreen" class="caution-screen">
     <div class="caution-content">
       <h2>⚠️ トレーニング前の注意 ⚠️</h2>
-      <p>{{ cautionMessage }}</p>
+      <p class="caution-text">{{ cautionMessage }}</p> <!-- 左寄せ＋改行反映 -->
       <button @click="startTraining">トレーニング開始</button>
     </div>
   </div>
@@ -158,38 +159,45 @@ const isTop = () => {
   <!-- 右端注意パネル -->
   <div v-if="showCautionSidebar" class="caution-sidebar">
     <h3>⚠️ 注意 ⚠️</h3>
-    <p>{{ cautionMessage }}</p>
+    <p class="caution-text">{{ cautionMessage }}</p>
   </div>
+
   <h2>ChestDay</h2>
   <div class="header">
     <button @click="isTop">Top</button>
   </div>
+
   <div class="flex-box">
     <div class="training-box">
+      <!-- 種目選択 -->
       <div class="row">
         <label>種目</label>
         <ChestExerciseSelect v-model="exercise" />
       </div>
 
-     <div class="row small-input">
-  <label>セット</label>
-  <input type="text" v-model="sets" @input="sets = toHalfWidthNumber(sets)" />
-</div>
+      <!-- セット数 -->
+      <div class="row small-input">
+        <label>セット</label>
+        <input type="text" v-model="sets" @input="sets = toHalfWidthNumber(sets)" />
+      </div>
 
-<div class="row small-input">
-  <label>重量(kg)</label>
-  <input type="text" v-model="weight" @input="weight = toHalfWidthNumber(weight)" />
-</div>
+      <!-- 重量 -->
+      <div class="row small-input">
+        <label>重量(kg)</label>
+        <input type="text" v-model="weight" @input="weight = toHalfWidthNumber(weight)" />
+      </div>
 
-<div class="row small-input">
-  <label>回数</label>
-  <input type="text" v-model="reps" @input="reps = toHalfWidthNumber(reps)"/>
-</div>
+      <!-- 回数 -->
+      <div class="row small-input">
+        <label>回数</label>
+        <input type="text" v-model="reps" @input="reps = toHalfWidthNumber(reps)" />
+      </div>
 
-<div class="row large-input">
-  <label>メモ</label>
-  <textarea placeholder="フォーム・感覚など" v-model="comment"></textarea>
-</div>
+      <!-- コメント -->
+      <div class="row large-input">
+        <label>メモ</label>
+        <textarea placeholder="フォーム・感覚など" v-model="comment"></textarea>
+      </div>
 
       <div class="flex-row">
         <button @click="isOK('insert')">OK</button>
@@ -197,11 +205,9 @@ const isTop = () => {
       </div>
     </div>
 
-    <!--記録を表示する-->
-
+    <!-- 過去トレーニング表示 -->
     <div class="training-box" v-if="trainings.length">
       <h3>前回の記録</h3>
-
       <div v-for="t in trainings" :key="t.id" class="row">
         <div>日付：{{ toJST(t.training_date) }}</div>
         <div>セット：{{ t.sets }}</div>
@@ -213,13 +219,15 @@ const isTop = () => {
       </div>
     </div>
   </div>
-  <div v-if="restSeconds > 0" class="timer-box">インターバル：{{ restSeconds }} 秒</div>
 
+  <div v-if="restSeconds > 0" class="timer-box">インターバル：{{ restSeconds }} 秒</div>
   <button @click="musicOn">Music On</button>
 </template>
 
 <style scoped>
-/* 枠線 */
+/* ------------------
+   トレーニングボックス全体
+-------------------- */
 .training-box {
   margin-top: 20px;
   padding: 16px;
@@ -227,19 +235,27 @@ const isTop = () => {
   background-color: #1e1e1e;
 }
 
-/* 行 */
+/* ------------------
+   行単位（ラベル＋入力）
+-------------------- */
 .row {
   display: flex;
   flex-direction: column;
   margin-bottom: 12px;
 }
 
+/* ------------------
+   ラベル
+-------------------- */
 label {
   font-size: 12px;
   margin-bottom: 4px;
   color: #bbbbbb;
 }
 
+/* ------------------
+   input, textarea 共通スタイル
+-------------------- */
 input,
 textarea {
   padding: 8px;
@@ -249,15 +265,20 @@ textarea {
   font-size: 14px;
 }
 
+/* placeholder色 */
 input::placeholder,
 textarea::placeholder {
   color: #888;
 }
 
+/* テキストエリアは縦のみリサイズ可 */
 textarea {
   resize: vertical;
 }
 
+/* ------------------
+   横並びフレックス
+-------------------- */
 .flex-box {
   display: flex;
   width: 1080px;
@@ -267,7 +288,9 @@ textarea {
   display: flex;
 }
 
-/* フルスクリーン */
+/* ------------------
+   フルスクリーン注意画面
+-------------------- */
 .caution-screen {
   position: fixed;
   top: 0;
@@ -283,7 +306,7 @@ textarea {
 }
 
 .caution-content {
-  max-width: 600px;
+  max-width: 1000px;
   text-align: center;
   padding: 32px;
   border: 2px solid #ff5555;
@@ -312,7 +335,9 @@ textarea {
   color: #fff;
 }
 
-/* 右端注意パネル */
+/* ------------------
+   右端注意パネル
+-------------------- */
 .caution-sidebar {
   position: fixed;
   top: 20px;
@@ -338,7 +363,9 @@ textarea {
   line-height: 1.4;
 }
 
-/* 小さい入力欄（rep/set/weight） */
+/* ------------------
+   小さい入力欄（rep/set/weight）
+-------------------- */
 .row.small-input input {
   width: 120px;
   padding: 6px 8px;
@@ -349,7 +376,9 @@ textarea {
   border-radius: 4px;
 }
 
-/* コメント欄を大きく */
+/* ------------------
+   コメント欄を大きく
+-------------------- */
 .row.large-input textarea {
   width: 100%;
   height: 120px;
@@ -362,10 +391,12 @@ textarea {
   resize: vertical;
 }
 
-/* ラベルは元デザイン */
-.row label {
-  font-size: 12px;
-  margin-bottom: 4px;
-  color: #bbbbbb;
+/* ------------------
+   注意メッセージの改行＋左寄せ
+-------------------- */
+.caution-text {
+  white-space: pre-line; /* 改行を反映 */
+  text-align: left;      /* 左寄せ */
+  padding: 4px 0;        /* 上下余白 */
 }
 </style>

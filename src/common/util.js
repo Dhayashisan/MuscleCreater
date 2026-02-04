@@ -18,6 +18,11 @@ export const toJST = (utcString) => {
   })
 }
 
+// 全角数字を半角に変換
+export const toHalfWidthNumber = (value) => {
+  return value.replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xFEE0))
+}
+
 
 // アラート音再生
 export const playAlertSound = () => {

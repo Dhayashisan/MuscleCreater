@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { supabase } from '../utils/supabase'
-import { toJST, startRestTimer } from '@/common/util'
+import { toJST, startRestTimer, toHalfWidthNumber } from '@/common/util'
 import ChestExerciseSelect from '@/parts/ChestExerciseSelect.vue'
 import cautionMessages from '@/common/cautionMessages.json'
 
@@ -14,11 +14,15 @@ const reps = ref('')
 const comment = ref('')
 const trainings = ref([])
 const restSeconds = ref(0)
-const videoUrl = ref('')
 const cautionMessage = ref('')
 const showCautionScreen = ref(false)
 const showCautionSidebar = ref(false)
-let timerId = null
+
+// トレーニングを開始する前にフォームを意識づけるスクリーンを表示する。
+const startTraining = () => {
+  showCautionScreen.value = false
+  showCautionSidebar.value = true
+}
 
 // 選んだ種目、セット目によって取得先を変更する処理
 watch([exercise, sets], ([newExercise, newSets]) => {
@@ -77,11 +81,6 @@ const fetchTrainings = async (exerciseName, setCount) => {
   trainings.value = data
 }
 
-// Top画面へ遷移する。
-const isTop = () => {
-  emit('go-top')
-}
-
 // OKボタンでDBに登録
 const isOK = async (flag) => {
   if (!exercise.value || !weight.value || !reps.value) {
@@ -127,8 +126,9 @@ const resetForm = () => {
   reps.value = ''
   comment.value = ''
 }
+
+// もし継続ならセット数を前回入力した値から＋１する関数
 const isContinue = () => {
-  // 継続ならセット数を前回入力した値から＋１したい
   sets.value = parseInt(sets.value) + parseInt(1)
   reps.value = ''
   comment.value = ''
@@ -139,9 +139,9 @@ const musicOn = () => {
   window.open('https://www.youtube.com/watch?v=zLpsmg3W1qE', '_blank')
 }
 
-const startTraining = () => {
-  showCautionScreen.value = false
-  showCautionSidebar.value = true
+// Top画面へ遷移する。
+const isTop = () => {
+  emit('go-top')
 }
 </script>
 
@@ -173,17 +173,17 @@ const startTraining = () => {
 
       <div class="row">
         <label>セット</label>
-        <input type="text" v-model="sets" />
+        <input type="text" v-model="sets" @input="sets = toHalfWidthNumber(sets)" />
       </div>
 
       <div class="row">
         <label>重量(kg)</label>
-        <input type="text" v-model="weight" />
+        <input type="text" v-model="weight" @input="weight = toHalfWidthNumber(weight)" />
       </div>
 
       <div class="row">
         <label>回数</label>
-        <input type="text" v-model="reps" />
+        <input type="text" v-model="reps" @input="reps = toHalfWidthNumber(reps)"/>
       </div>
 
       <div class="row">

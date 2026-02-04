@@ -171,25 +171,25 @@ const isTop = () => {
         <ChestExerciseSelect v-model="exercise" />
       </div>
 
-      <div class="row">
-        <label>セット</label>
-        <input type="text" v-model="sets" @input="sets = toHalfWidthNumber(sets)" />
-      </div>
+     <div class="row small-input">
+  <label>セット</label>
+  <input type="text" v-model="sets" @input="sets = toHalfWidthNumber(sets)" />
+</div>
 
-      <div class="row">
-        <label>重量(kg)</label>
-        <input type="text" v-model="weight" @input="weight = toHalfWidthNumber(weight)" />
-      </div>
+<div class="row small-input">
+  <label>重量(kg)</label>
+  <input type="text" v-model="weight" @input="weight = toHalfWidthNumber(weight)" />
+</div>
 
-      <div class="row">
-        <label>回数</label>
-        <input type="text" v-model="reps" @input="reps = toHalfWidthNumber(reps)"/>
-      </div>
+<div class="row small-input">
+  <label>回数</label>
+  <input type="text" v-model="reps" @input="reps = toHalfWidthNumber(reps)"/>
+</div>
 
-      <div class="row">
-        <label>メモ</label>
-        <textarea placeholder="フォーム・感覚など" v-model="comment"></textarea>
-      </div>
+<div class="row large-input">
+  <label>メモ</label>
+  <textarea placeholder="フォーム・感覚など" v-model="comment"></textarea>
+</div>
 
       <div class="flex-row">
         <button @click="isOK('insert')">OK</button>
@@ -336,5 +336,36 @@ textarea {
 .caution-sidebar p {
   font-size: 14px;
   line-height: 1.4;
+}
+
+/* 小さい入力欄（rep/set/weight） */
+.row.small-input input {
+  width: 120px;
+  padding: 6px 8px;
+  border: 1px solid #666;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+/* コメント欄を大きく */
+.row.large-input textarea {
+  width: 100%;
+  height: 120px;
+  padding: 10px;
+  border: 1px solid #666;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  font-size: 14px;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+/* ラベルは元デザイン */
+.row label {
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #bbbbbb;
 }
 </style>

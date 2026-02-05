@@ -23,24 +23,98 @@ const goTop = () => {
 
 <template>
   <section class="training">
-    <h2>Training</h2>
-    <div v-if="isTraningMode === 'Chest'">
+    <h2 class="title">Training</h2>
+
+    <!-- トレーニング画面 -->
+    <div v-if="isTraningMode === 'Chest'" class="training-view">
       <Chest @go-top="goTop" />
     </div>
-    <div v-if="isTraningMode === 'back'"></div>
-    <div v-if="isTraningMode === null">
-      <button @click="isChest">chest💛</button>
-      <button @click="iscancel">back</button>
-      <button @click="iscancel">shoulder</button>
-      <button @click="iscancel">arm</button>
-      <button @click="iscancel">leg</button>
-      <button @click="iscancel">cancel💛</button>
+
+    <!-- メニュー画面 -->
+    <div v-if="isTraningMode === null" class="menu">
+      <button class="menu-btn" @click="isChest">Chest 💛</button>
+      <button class="menu-btn disabled">Back</button>
+      <button class="menu-btn disabled">Shoulder</button>
+      <button class="menu-btn disabled">Arm</button>
+      <button class="menu-btn disabled">Leg</button>
+
+      <button class="menu-btn cancel" @click="iscancel">
+        Cancel
+      </button>
     </div>
   </section>
 </template>
 
 <style scoped>
+/* =========================
+   全体
+========================= */
 .training {
-  padding: 20px;
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+  background-color: #121212;
+  color: #fff;
+}
+
+/* タイトル */
+.title {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* =========================
+   メニュー画面
+========================= */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* メニューボタン */
+.menu-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  background-color: #2a2a2a;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 未実装 */
+.menu-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* キャンセル */
+.menu-btn.cancel {
+  background-color: #444;
+}
+
+/* =========================
+   トレーニング表示エリア
+========================= */
+.training-view {
+  width: 100%;
+}
+
+/* =========================
+   PC向け
+========================= */
+@media screen and (min-width: 769px) {
+  .training {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  .menu-btn {
+    font-size: 18px;
+    padding: 18px;
+  }
 }
 </style>

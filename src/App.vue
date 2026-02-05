@@ -76,4 +76,79 @@ const closeTraining = () => {
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* =========================
+   全体レイアウト
+========================= */
+main {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background-color: #121212;
+  color: #fff;
+}
+
+.login {
+  width: 100%;
+  max-width: 960px;
+  padding: 16px;
+}
+
+/* =========================
+   ログイン画面
+========================= */
+.loginform {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20vh;
+}
+
+.loginform input {
+  padding: 12px;
+  font-size: 16px;
+}
+
+.loginform button {
+  padding: 12px;
+  font-size: 16px;
+}
+
+/* =========================
+   トップ画面
+========================= */
+.main-contents {
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+/* メニューボタン */
+.main-contents button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+}
+
+/* =========================
+   PC向け微調整
+========================= */
+@media screen and (min-width: 769px) {
+  .login {
+    padding: 32px;
+  }
+
+  .loginform {
+    max-width: 400px;
+    margin: 20vh auto 0;
+  }
+
+  .main-contents button {
+    max-width: 320px;
+  }
+}
+</style>

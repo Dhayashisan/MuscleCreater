@@ -288,78 +288,184 @@ const isTop = () => {
 </template>
 
 <style scoped>
-/* ------------------
-   トレーニングボックス全体
--------------------- */
-.training-box {
-  margin-top: 20px;
-  padding: 16px;
-  border: 1px solid #555;
-  background-color: #1e1e1e;
+/* =========================
+   全体
+========================= */
+h2 {
+  text-align: center;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+  color: #f5f5f5;
 }
 
-/* ------------------
-   行単位（ラベル＋入力）
--------------------- */
+.header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.header button {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #00ffd5;
+  color: #00ffd5;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0, 255, 213, 0.6);
+}
+
+/* =========================
+   レイアウト
+========================= */
+.flex-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* PC：2カラム */
+@media screen and (min-width: 768px) {
+  .flex-box {
+    flex-direction: row;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+}
+
+/* =========================
+   トレーニングボックス
+========================= */
+.training-box {
+  flex: 1;
+  margin-top: 20px;
+  padding: 16px;
+  background: #151515;
+  border: 1px solid #00ffd5;
+  border-radius: 12px;
+  box-shadow:
+    0 0 10px rgba(0, 255, 213, 0.3),
+    inset 0 0 10px rgba(0, 255, 213, 0.1);
+}
+
+/* =========================
+   行単位
+========================= */
 .row {
   display: flex;
   flex-direction: column;
   margin-bottom: 12px;
 }
 
-/* ------------------
+/* =========================
    ラベル
--------------------- */
+========================= */
 label {
   font-size: 12px;
   margin-bottom: 4px;
-  color: #bbbbbb;
+  color: #9eece0;
 }
 
-/* ------------------
-   input, textarea 共通スタイル
--------------------- */
+/* =========================
+   入力系
+========================= */
 input,
 textarea {
   padding: 8px;
-  background-color: #2a2a2a;
-  border: 1px solid #666;
-  color: #ffffff;
+  background-color: #0f0f0f;
+  border: 1px solid #444;
+  color: #eaeaea;
   font-size: 14px;
+  border-radius: 6px;
 }
 
-/* placeholder色 */
 input::placeholder,
 textarea::placeholder {
-  color: #888;
+  color: #777;
 }
 
-/* テキストエリアは縦のみリサイズ可 */
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #00ffd5;
+  box-shadow: 0 0 6px rgba(0, 255, 213, 0.7);
+}
+
 textarea {
   resize: vertical;
 }
 
-/* ------------------
-   横並びフレックス
--------------------- */
-.flex-box {
-  display: flex;
-  width: 1080px;
+/* =========================
+   小さい入力欄
+========================= */
+.row.small-input input {
+  width: 120px;
 }
 
+/* =========================
+   コメント欄
+========================= */
+.row.large-input textarea {
+  width: 100%;
+  height: 120px;
+}
+
+/* =========================
+   ボタン
+========================= */
 .flex-row {
   display: flex;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-/* ------------------
+.flex-row button {
+  flex: 1;
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* OK */
+.flex-row button:first-child {
+  background: #00ffd5;
+  color: #000;
+  box-shadow: 0 0 12px rgba(0, 255, 213, 0.8);
+}
+
+/* 継続 */
+.flex-row button:last-child {
+  background: transparent;
+  color: #00ffd5;
+  border: 1px solid #00ffd5;
+}
+
+/* =========================
+   インターバルタイマー
+========================= */
+.timer-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 16px;
+  background: #000;
+  border: 1px solid #00ffd5;
+  border-radius: 10px;
+  color: #00ffd5;
+  font-weight: bold;
+  z-index: 2000;
+  box-shadow: 0 0 15px rgba(0, 255, 213, 0.9);
+}
+
+/* =========================
    フルスクリーン注意画面
--------------------- */
+========================= */
 .caution-screen {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   justify-content: center;
@@ -369,12 +475,15 @@ textarea {
 }
 
 .caution-content {
-  max-width: 1000px;
-  text-align: center;
+  max-width: 900px;
   padding: 32px;
-  border: 2px solid #ff5555;
-  background-color: #1e1e1e;
-  border-radius: 12px;
+  background-color: #1a1a1a;
+  border: 2px solid #ff4444;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow:
+    0 0 20px rgba(255, 60, 60, 0.8),
+    inset 0 0 10px rgba(255, 60, 60, 0.4);
 }
 
 .caution-content h2 {
@@ -389,77 +498,46 @@ textarea {
 }
 
 .caution-content button {
-  padding: 12px 24px;
+  padding: 12px 28px;
   font-size: 16px;
   background-color: #ff5555;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  color: #fff;
-}
-
-/* ------------------
-   右端注意パネル
--------------------- */
-.caution-sidebar {
-  position: fixed;
-  top: 20px;
-  right: 500px;
-  width: 500px;
-  max-width: 100%;
-  background-color: #1e1e1e;
-  border: 2px solid #ff5555;
-  padding: 16px;
   border-radius: 8px;
   color: #fff;
-  z-index: 1000;
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+/* =========================
+   右下 注意サイドバー
+========================= */
+.caution-sidebar {
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  width: calc(100% - 32px);
+  max-width: 420px;
+  background-color: #1a1a1a;
+  border: 2px solid #ff5555;
+  padding: 16px;
+  border-radius: 10px;
+  color: #fff;
+  z-index: 1500;
+  box-shadow: 0 0 15px rgba(255, 60, 60, 0.8);
 }
 
 .caution-sidebar h3 {
   margin-bottom: 10px;
-  color: #ff5555;
+  color: #ff6666;
 }
 
-.caution-sidebar p {
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-/* ------------------
-   小さい入力欄（rep/set/weight）
--------------------- */
-.row.small-input input {
-  width: 120px;
-  padding: 6px 8px;
-  border: 1px solid #666;
-  background-color: #2a2a2a;
-  color: #ffffff;
-  font-size: 14px;
-  border-radius: 4px;
-}
-
-/* ------------------
-   コメント欄を大きく
--------------------- */
-.row.large-input textarea {
-  width: 100%;
-  height: 120px;
-  padding: 10px;
-  border: 1px solid #666;
-  background-color: #2a2a2a;
-  color: #ffffff;
-  font-size: 14px;
-  border-radius: 4px;
-  resize: vertical;
-}
-
-/* ------------------
-   注意メッセージの改行＋左寄せ
--------------------- */
+/* =========================
+   注意文言
+========================= */
 .caution-text {
-  white-space: pre-line; /* 改行を反映 */
-  text-align: left; /* 左寄せ */
-  padding: 4px 0; /* 上下余白 */
+  white-space: pre-line;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.5;
 }
+
 </style>

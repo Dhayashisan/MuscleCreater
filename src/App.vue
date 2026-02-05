@@ -1,7 +1,27 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted,provide } from 'vue'
 import TraningView from '@/compornents/TraningView.vue'
 const isMode = ref(false)
+const username = ref('')
+const isEntered = ref(false)
+
+
+provide('username', username)
+
+// 初回ロード時：名前が保存されていればスキップ
+onMounted(() => {
+  const savedName = localStorage.getItem('username')
+  if (savedName) {
+    username.value = savedName
+    isEntered.value = true
+  }
+})
+
+const enterName = () => {
+  if (!username.value) return
+  localStorage.setItem('username', username.value)
+  isEntered.value = true
+}
 
 const showTraining = () => {
   console.log('test')
@@ -25,20 +45,33 @@ const closeTraining = () => {
 <!--淡々とトレーニングをこなせる様、余計な機能を省くこと-->
 <template>
   <main>
-    <div class="top"></div>
-    <!-- メニュー画面 -->
-    <div v-if="isMode" class="main-contents">
-      <!-- Training画面 -->
-      <TraningView @close-training="closeTraining" />
-    </div>
-    <div v-if="!isMode" class="main-contents">
-      <div class="header">
-        <h1>Welcome!!!PokochinMuscleSchoooooooooooooool!!!!</h1>
+    <div class="login">
+      <!-- ① 名前入力画面 -->
+      <div v-if="!isEntered" class="loginform">
+        <h2>あなたの名前を入力してください</h2>
+        <input v-model="username" placeholder="Name" />
+        <button @click="enterName">Start</button>
       </div>
-      <button @click="showTraining">Training💛</button>
-      <button>Edit</button>
-      <button>Setting</button>
-      <button>Graph</button>
+
+      <!-- ② トップ画面 -->
+      <div v-else class="main-contents">
+        <!-- Training画面 -->
+        <div v-if="isMode">
+          <TraningView @close-training="closeTraining" />
+        </div>
+
+        <!-- メニュー画面 -->
+        <div v-else>
+          <div class="header">
+            <h1>Welcome {{ username }} 💪</h1>
+          </div>
+
+          <button @click="showTraining">Training💛</button>
+          <button>Edit</button>
+          <button>Setting</button>
+          <button>Graph</button>
+        </div>
+      </div>
     </div>
   </main>
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, inject } from 'vue'
 import { supabase } from '../utils/supabase'
 import { toJST, startRestTimer, toHalfWidthNumber } from '@/common/util'
 import ChestExerciseSelect from '@/parts/ChestExerciseSelect.vue'
@@ -20,6 +20,7 @@ const cautionMessage = ref('') // 注意メッセージ
 const showCautionScreen = ref(false) // フルスクリーン注意表示
 const showCautionSidebar = ref(false) // 右側注意パネル表示
 const isFetchAllSets = ref(false) // 前回日の全セット取得トグル
+const username = inject('username')
 
 // トレーニング開始ボタン押下時の処理
 const startTraining = () => {
@@ -100,6 +101,7 @@ const fetchAllSetsFromLastDate = async (exerciseName) => {
     .select('training_date')
     .eq('muscle_group', '胸')
     .eq('exercise', exerciseName)
+    .eq('name', username.value) // ← 追加
     .order('training_date', { ascending: false })
     .limit(1)
 
@@ -116,6 +118,7 @@ const fetchAllSetsFromLastDate = async (exerciseName) => {
     .select('*')
     .eq('muscle_group', '胸')
     .eq('exercise', exerciseName)
+    .eq('name', username.value) // ← 追加
     .gte('training_date', latestDate.split('T')[0] + 'T00:00:00')
     .lte('training_date', latestDate.split('T')[0] + 'T23:59:59')
     .order('sets', { ascending: true })
@@ -135,7 +138,7 @@ const isOK = async (flag) => {
     return
   }
   await supabase.from('TraningDatabase').insert({
-    userid: parseFloat(1),
+    name: username.value,
     training_date: new Date().toISOString(),
     muscle_group: '胸',
     exercise: exercise.value,
@@ -280,9 +283,12 @@ const isTop = () => {
    トレーニングボックス全体
 -------------------- */
 .training-box {
-  flex: 1;
-  min-width: 0;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #555;
+  background-color: #1e1e1e;
 }
+
 /* ------------------
    行単位（ラベル＋入力）
 -------------------- */
@@ -329,9 +335,7 @@ textarea {
 -------------------- */
 .flex-box {
   display: flex;
-  gap: 16px;
-  max-width: 1080px;
-  width: 100%;
+  width: 1080px;
 }
 
 .flex-row {
@@ -353,36 +357,6 @@ textarea {
   align-items: center;
   z-index: 9999;
   color: #fff;
-}
-@media (max-width: 1024px) {
-  .flex-box {
-    flex-direction: column;
-  }
-
-  .caution-sidebar {
-    position: static;
-    width: 100%;
-    margin-top: 16px;
-  }
-}
-
-@media (max-width: 600px) {
-  .caution-screen h2 {
-    font-size: 18px;
-  }
-
-  .caution-content p {
-    font-size: 14px;
-  }
-
-  .row.small-input input {
-    width: 100%;
-  }
-
-  .flex-row {
-    flex-direction: column;
-    gap: 8px;
-  }
 }
 
 .caution-content {
@@ -421,8 +395,16 @@ textarea {
 .caution-sidebar {
   position: fixed;
   top: 20px;
-  right: 20px;
-  width: 360px;
+  right: 500px;
+  width: 500px;
+  max-width: 100%;
+  background-color: #1e1e1e;
+  border: 2px solid #ff5555;
+  padding: 16px;
+  border-radius: 8px;
+  color: #fff;
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
 .caution-sidebar h3 {

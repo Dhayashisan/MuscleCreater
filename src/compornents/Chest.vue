@@ -4,6 +4,7 @@ import { supabase } from '../utils/supabase'
 import { toJST, startRestTimer, toHalfWidthNumber } from '@/common/util'
 import ChestExerciseSelect from '@/parts/ChestExerciseSelect.vue'
 import cautionMessages from '@/common/cautionMessages.json'
+import exerciseMaster from '@/common/exercise.json'
 
 // emitイベント定義（親コンポーネントにTop遷移を通知）
 const emit = defineEmits(['go-top'])
@@ -150,7 +151,7 @@ const isOK = async (flag) => {
 
   // 休憩タイマー開始
   startRestTimer({
-    seconds: 1,
+    seconds: getRestSecondsByExercise(),
     onTick: (sec) => {
       restSeconds.value = sec
     },
@@ -164,6 +165,14 @@ const isOK = async (flag) => {
       }
     },
   })
+}
+
+const getRestSecondsByExercise = () => {
+  if (!exercise.value) return 90 // 保険
+
+  const found = exerciseMaster.exercises.find((e) => e.name_jp === exercise.value)
+
+  return found?.rest_seconds ?? 90
 }
 
 // フォームを初期化

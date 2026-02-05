@@ -108,7 +108,6 @@ const isOK = async (flag) => {
     },
     onFinish: () => {
       alert('インターバル終了')
-      fetchTrainings()
       // OKならフォームリセット、継続ならセット数+1
       if (flag === 'insert') {
         resetForm()

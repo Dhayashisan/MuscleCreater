@@ -1,14 +1,20 @@
 <script setup>
-import { ref, onMounted,provide } from 'vue'
+import { ref, onMounted } from 'vue'
 import TraningView from '@/compornents/TraningView.vue'
+
 const isMode = ref(false)
 const username = ref('')
 const isEntered = ref(false)
+const currentMode = ref('training') // 'training' or 'graph'
 
+// 名前入力処理
+const enterName = () => {
+  if (!username.value) return
+  localStorage.setItem('username', username.value)
+  isEntered.value = true
+}
 
-provide('username', username)
-
-// 初回ロード時：名前が保存されていればスキップ
+// 初回ロード時に名前があればスキップ
 onMounted(() => {
   const savedName = localStorage.getItem('username')
   if (savedName) {
@@ -17,50 +23,36 @@ onMounted(() => {
   }
 })
 
-const enterName = () => {
-  if (!username.value) return
-  localStorage.setItem('username', username.value)
-  isEntered.value = true
+// モード切替
+const showTraining = () => {
+  currentMode.value = 'training'
+  isMode.value = true
 }
 
-const showTraining = () => {
-  console.log('test')
+const showGraph = () => {
+  currentMode.value = 'graph'
   isMode.value = true
 }
 
 const closeTraining = () => {
-  console.log('test')
   isMode.value = false
 }
 </script>
-<!--マッスル個人的プログラム-->
-<!--簡易設計-->
-<!--画面は「当日記入画面」「編集画面」「メンテナンス画面」「グラフ画面」-->
-<!--★ボディビルを重視したトレーニングを行う為、以下流れを行えるよう意識づける為の管理表。-->
-<!--０：アップ　１：意識づけ（フォーム）　２：個人で気を付けること　３：前回の重さ・回数　４：感想-->
-<!--ストップウォッチ機能がいるかどうか迷う-->
-<!--トレーニング登録タイプ：7ぐらい題名は任せる。-->
 
-<!--★気を付けること-->
-<!--淡々とトレーニングをこなせる様、余計な機能を省くこと-->
 <template>
   <main>
     <div class="login">
-      <!-- ① 名前入力画面 -->
       <div v-if="!isEntered" class="loginform">
         <h2>あなたの名前を入力してください</h2>
         <input v-model="username" placeholder="Name" />
         <button @click="enterName">Start</button>
       </div>
 
-      <!-- ② トップ画面 -->
       <div v-else class="main-contents">
-        <!-- Training画面 -->
         <div v-if="isMode">
-          <TraningView @close-training="closeTraining" />
+          <TraningView :mode="currentMode" @close-training="closeTraining" />
         </div>
 
-        <!-- メニュー画面 -->
         <div v-else>
           <div class="header">
             <h1>Welcome {{ username }} 💪</h1>
@@ -69,7 +61,7 @@ const closeTraining = () => {
           <button @click="showTraining">Training💛</button>
           <button>Edit</button>
           <button>Setting</button>
-          <button>Graph</button>
+          <button @click="showGraph">Graph💛</button>
         </div>
       </div>
     </div>

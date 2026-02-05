@@ -1,44 +1,47 @@
 <script setup>
 import { ref } from 'vue'
-import Chest from '@/compornents/Chest.vue'
-const isTraningMode = ref(null)
+import ChestTraining from '@/compornents/Chest.vue'
+import ChestGraph from '@/compornents/ChestGraph.vue'
+
+const props = defineProps({
+  mode: String // 'training' または 'graph'
+})
+
 const emit = defineEmits(['close-training'])
 
-const isChest = () => {
-  console.log('hoge')
-  isTraningMode.value = 'Chest'
-}
+const currentView = ref(null) // null or 'Chest'
 
-const iscancel = () => {
-  emit('close-training')
+const onChest = () => {
+  currentView.value = 'Chest'
 }
 
 const goTop = () => {
-  // 子の状態リセット
-  isTraningMode.value = null
-  // 親へ通知
+  currentView.value = null
   emit('close-training')
 }
 </script>
 
 <template>
   <section class="training">
-    <h2 class="title">Training</h2>
+    <h2 class="title">
+      {{ props.mode === 'training' ? 'Training' : 'Graph' }}
+    </h2>
 
-    <!-- トレーニング画面 -->
-    <div v-if="isTraningMode === 'Chest'" class="training-view">
-      <Chest @go-top="goTop" />
+    <!-- Chest画面 -->
+    <div v-if="currentView === 'Chest'">
+      <ChestTraining v-if="props.mode === 'training'" @go-top="goTop" />
+      <ChestGraph v-else @go-top="goTop" />
     </div>
 
-    <!-- メニュー画面 -->
-    <div v-if="isTraningMode === null" class="menu">
-      <button class="menu-btn" @click="isChest">Chest 💛</button>
+    <!-- メニュー -->
+    <div v-else class="menu">
+      <button class="menu-btn" @click="onChest">Chest 💛</button>
       <button class="menu-btn disabled">Back</button>
       <button class="menu-btn disabled">Shoulder</button>
       <button class="menu-btn disabled">Arm</button>
       <button class="menu-btn disabled">Leg</button>
 
-      <button class="menu-btn cancel" @click="iscancel">
+      <button class="menu-btn cancel" @click="emit('close-training')">
         Cancel
       </button>
     </div>

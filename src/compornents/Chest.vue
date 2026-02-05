@@ -82,6 +82,7 @@ const fetchTrainings = async (exerciseName, setCount) => {
     .select('*')
     .eq('muscle_group', '胸')
     .eq('exercise', exerciseName)
+    .eq('name', username.value) // ← 追加
     .eq('sets', setCount)
     .order('training_date', { ascending: false })
     .limit(1)

@@ -10,10 +10,10 @@ const emit = defineEmits(['go-top'])
 
 // フォームデータをrefで管理
 const exercise = ref('') // 種目
-const weight = ref('')   // 重量
-const sets = ref('')     // セット数
-const reps = ref('')     // 回数
-const comment = ref('')  // メモ
+const weight = ref('') // 重量
+const sets = ref('') // セット数
+const reps = ref('') // 回数
+const comment = ref('') // メモ
 const trainings = ref([]) // DBから取得した過去トレーニング
 const restSeconds = ref(0) // インターバルタイマー
 const cautionMessage = ref('') // 注意メッセージ
@@ -40,6 +40,12 @@ watch(exercise, (newVal) => {
   switch (newVal) {
     case 'ベンチプレス':
       cautionMessage.value = cautionMessages.BP
+      break
+    case 'インクラインベンチプレス':
+      cautionMessage.value = cautionMessages.INBP
+      break
+    case 'ディップス':
+      cautionMessage.value = cautionMessages.DIPS
       break
     case 'インクラインダンベルプレス':
       cautionMessage.value = cautionMessages.INDBFLY
@@ -87,18 +93,16 @@ const isOK = async (flag) => {
     alert('種目・重量・回数は必須です')
     return
   }
-  await supabase
-    .from('TraningDatabase')
-    .insert({
-      userid: parseFloat(1),
-      training_date: new Date().toISOString(),
-      muscle_group: '胸',
-      exercise: exercise.value,
-      weight: weight.value,
-      sets: parseInt(sets.value),
-      reps: reps.value,
-      comment: comment.value,
-    })
+  await supabase.from('TraningDatabase').insert({
+    userid: parseFloat(1),
+    training_date: new Date().toISOString(),
+    muscle_group: '胸',
+    exercise: exercise.value,
+    weight: weight.value,
+    sets: parseInt(sets.value),
+    reps: reps.value,
+    comment: comment.value,
+  })
 
   // 休憩タイマー開始
   startRestTimer({
@@ -150,7 +154,8 @@ const isTop = () => {
   <div v-if="showCautionScreen" class="caution-screen">
     <div class="caution-content">
       <h2>⚠️ トレーニング前の注意 ⚠️</h2>
-      <p class="caution-text">{{ cautionMessage }}</p> <!-- 左寄せ＋改行反映 -->
+      <p class="caution-text">{{ cautionMessage }}</p>
+      <!-- 左寄せ＋改行反映 -->
       <button @click="startTraining">トレーニング開始</button>
     </div>
   </div>
@@ -395,7 +400,7 @@ textarea {
 -------------------- */
 .caution-text {
   white-space: pre-line; /* 改行を反映 */
-  text-align: left;      /* 左寄せ */
-  padding: 4px 0;        /* 上下余白 */
+  text-align: left; /* 左寄せ */
+  padding: 4px 0; /* 上下余白 */
 }
 </style>

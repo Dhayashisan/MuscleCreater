@@ -12,6 +12,8 @@ const emit = defineEmits(['update:modelValue'])
 
 const chestExercises = [
   'ベンチプレス',
+  'インクラインベンチプレス',
+  'ディップス',  
   'インクラインダンベルプレス',
   'ダンベルフライ',
   '腕立て伏せ'

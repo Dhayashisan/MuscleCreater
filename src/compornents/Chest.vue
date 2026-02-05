@@ -295,7 +295,12 @@ h2 {
   text-align: center;
   margin-bottom: 12px;
   letter-spacing: 1px;
+  font-size: 20px;
   color: #f5f5f5;
+}
+
+h3 {
+  font-size: 18px;
 }
 
 .header {
@@ -305,7 +310,8 @@ h2 {
 }
 
 .header button {
-  padding: 8px 16px;
+  padding: 10px 18px;
+  font-size: 16px;
   background: transparent;
   border: 1px solid #00ffd5;
   color: #00ffd5;
@@ -354,15 +360,16 @@ h2 {
 .row {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  font-size: 16px;
 }
 
 /* =========================
    ラベル
 ========================= */
 label {
-  font-size: 12px;
-  margin-bottom: 4px;
+  font-size: 16px;
+  margin-bottom: 6px;
   color: #9eece0;
 }
 
@@ -371,16 +378,17 @@ label {
 ========================= */
 input,
 textarea {
-  padding: 8px;
+  padding: 10px;
   background-color: #0f0f0f;
   border: 1px solid #444;
   color: #eaeaea;
-  font-size: 14px;
+  font-size: 16px;
   border-radius: 6px;
 }
 
 input::placeholder,
 textarea::placeholder {
+  font-size: 16px;
   color: #777;
 }
 
@@ -399,7 +407,7 @@ textarea {
    小さい入力欄
 ========================= */
 .row.small-input input {
-  width: 120px;
+  width: 140px;
 }
 
 /* =========================
@@ -416,14 +424,14 @@ textarea {
 .flex-row {
   display: flex;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .flex-row button {
   flex: 1;
-  padding: 12px;
-  font-size: 15px;
-  border-radius: 8px;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
   font-weight: bold;
@@ -450,10 +458,11 @@ textarea {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  padding: 12px 16px;
+  padding: 14px 18px;
   background: #000;
   border: 1px solid #00ffd5;
   border-radius: 10px;
+  font-size: 18px;
   color: #00ffd5;
   font-weight: bold;
   z-index: 2000;
@@ -487,22 +496,23 @@ textarea {
 }
 
 .caution-content h2 {
+  font-size: 22px;
   margin-bottom: 20px;
   color: #ff5555;
 }
 
 .caution-content p {
   font-size: 18px;
-  line-height: 1.6;
+  line-height: 1.7;
   margin-bottom: 30px;
 }
 
 .caution-content button {
-  padding: 12px 28px;
+  padding: 14px 32px;
   font-size: 16px;
   background-color: #ff5555;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #fff;
   cursor: pointer;
 }
@@ -521,11 +531,13 @@ textarea {
   padding: 16px;
   border-radius: 10px;
   color: #fff;
+  font-size: 16px;
   z-index: 1500;
   box-shadow: 0 0 15px rgba(255, 60, 60, 0.8);
 }
 
 .caution-sidebar h3 {
+  font-size: 18px;
   margin-bottom: 10px;
   color: #ff6666;
 }
@@ -536,8 +548,8 @@ textarea {
 .caution-text {
   white-space: pre-line;
   text-align: left;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 </style>

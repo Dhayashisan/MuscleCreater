@@ -29,12 +29,12 @@ const goTop = () => {
     </div>
     <div v-if="isTraningMode === 'back'"></div>
     <div v-if="isTraningMode === null">
-      <button @click="isChest">chest</button>
+      <button @click="isChest">chest💛</button>
       <button @click="iscancel">back</button>
       <button @click="iscancel">shoulder</button>
       <button @click="iscancel">arm</button>
       <button @click="iscancel">leg</button>
-      <button @click="iscancel">cancel</button>
+      <button @click="iscancel">cancel💛</button>
     </div>
   </section>
 </template>

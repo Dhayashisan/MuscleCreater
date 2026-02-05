@@ -19,6 +19,7 @@ const restSeconds = ref(0) // インターバルタイマー
 const cautionMessage = ref('') // 注意メッセージ
 const showCautionScreen = ref(false) // フルスクリーン注意表示
 const showCautionSidebar = ref(false) // 右側注意パネル表示
+const isFetchAllSets = ref(false) // 前回日の全セット取得トグル
 
 // トレーニング開始ボタン押下時の処理
 const startTraining = () => {
@@ -27,12 +28,17 @@ const startTraining = () => {
 }
 
 // 選択種目 or セット数が変わったときDBから過去データ取得
-watch([exercise, sets], ([newExercise, newSets]) => {
-  if (!newExercise || !newSets) {
+watch([exercise, sets, isFetchAllSets], ([newExercise, newSets, toggle]) => {
+  if (!newExercise) {
     trainings.value = []
     return
   }
-  fetchTrainings(newExercise, parseInt(newSets))
+
+  if (toggle) {
+    fetchAllSetsFromLastDate(newExercise)
+  } else if (newSets) {
+    fetchTrainings(newExercise, parseInt(newSets))
+  }
 })
 
 // 種目選択に応じて注意メッセージをセット
@@ -87,6 +93,41 @@ const fetchTrainings = async (exerciseName, setCount) => {
   trainings.value = data
 }
 
+const fetchAllSetsFromLastDate = async (exerciseName) => {
+  // ① 前回トレーニング日を取得
+  const { data: latestData, error: latestError } = await supabase
+    .from('TraningDatabase')
+    .select('training_date')
+    .eq('muscle_group', '胸')
+    .eq('exercise', exerciseName)
+    .order('training_date', { ascending: false })
+    .limit(1)
+
+  if (latestError || !latestData.length) {
+    trainings.value = []
+    return
+  }
+
+  const latestDate = latestData[0].training_date
+
+  // ② その日の全セットを取得
+  const { data, error } = await supabase
+    .from('TraningDatabase')
+    .select('*')
+    .eq('muscle_group', '胸')
+    .eq('exercise', exerciseName)
+    .gte('training_date', latestDate.split('T')[0] + 'T00:00:00')
+    .lte('training_date', latestDate.split('T')[0] + 'T23:59:59')
+    .order('sets', { ascending: true })
+
+  if (error) {
+    trainings.value = []
+    return
+  }
+
+  trainings.value = data
+}
+
 // OKボタン押下時の処理（DB登録＋インターバルタイマー）
 const isOK = async (flag) => {
   if (!exercise.value || !weight.value || !reps.value) {
@@ -106,7 +147,7 @@ const isOK = async (flag) => {
 
   // 休憩タイマー開始
   startRestTimer({
-    seconds: 10,
+    seconds: 1,
     onTick: (sec) => {
       restSeconds.value = sec
     },
@@ -212,6 +253,12 @@ const isTop = () => {
     <!-- 過去トレーニング表示 -->
     <div class="training-box" v-if="trainings.length">
       <h3>前回の記録</h3>
+      <div class="row">
+        <label>
+          <input type="checkbox" v-model="isFetchAllSets" />
+          前回日の全セットを表示
+        </label>
+      </div>
       <div v-for="t in trainings" :key="t.id" class="row">
         <div>日付：{{ toJST(t.training_date) }}</div>
         <div>セット：{{ t.sets }}</div>
@@ -233,12 +280,9 @@ const isTop = () => {
    トレーニングボックス全体
 -------------------- */
 .training-box {
-  margin-top: 20px;
-  padding: 16px;
-  border: 1px solid #555;
-  background-color: #1e1e1e;
+  flex: 1;
+  min-width: 0;
 }
-
 /* ------------------
    行単位（ラベル＋入力）
 -------------------- */
@@ -285,7 +329,9 @@ textarea {
 -------------------- */
 .flex-box {
   display: flex;
-  width: 1080px;
+  gap: 16px;
+  max-width: 1080px;
+  width: 100%;
 }
 
 .flex-row {
@@ -307,6 +353,36 @@ textarea {
   align-items: center;
   z-index: 9999;
   color: #fff;
+}
+@media (max-width: 1024px) {
+  .flex-box {
+    flex-direction: column;
+  }
+
+  .caution-sidebar {
+    position: static;
+    width: 100%;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .caution-screen h2 {
+    font-size: 18px;
+  }
+
+  .caution-content p {
+    font-size: 14px;
+  }
+
+  .row.small-input input {
+    width: 100%;
+  }
+
+  .flex-row {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 .caution-content {
@@ -345,16 +421,8 @@ textarea {
 .caution-sidebar {
   position: fixed;
   top: 20px;
-  right: 500px;
-  width: 500px;
-  max-width: 100%;
-  background-color: #1e1e1e;
-  border: 2px solid #ff5555;
-  padding: 16px;
-  border-radius: 8px;
-  color: #fff;
-  z-index: 1000;
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  right: 20px;
+  width: 360px;
 }
 
 .caution-sidebar h3 {

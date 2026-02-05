@@ -35,9 +35,9 @@ const closeTraining = () => {
       <div class="header">
         <h1>Welcome!!!PokochinMuscleSchoooooooooooooool!!!!</h1>
       </div>
-      <button @click="showTraining">Training</button>
+      <button @click="showTraining">Training💛</button>
       <button>Edit</button>
-      <button>Maintenance</button>
+      <button>Setting</button>
       <button>Graph</button>
     </div>
   </main>

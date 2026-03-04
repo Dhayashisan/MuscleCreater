@@ -4,27 +4,27 @@
     {
       "id": 1,
       "name_jp": "ベンチプレス",
-      "rest_seconds": 120
+      "rest_seconds": 1
     },
     {
       "id": 2,
       "name_jp": "インクラインベンチプレス",
-      "rest_seconds": 120
+      "rest_seconds": 1
     },
     {
       "id": 3,
       "name_jp": "ディップス",
-      "rest_seconds": 120
+      "rest_seconds": 1
     },
     {
       "id": 4,
       "name_jp": "インクラインダンベルプレス",
-      "rest_seconds": 120
+      "rest_seconds": 1
     },
     {
       "id": 5,
       "name_jp": "ダンベルフライ",
-      "rest_seconds": 90
+      "rest_seconds": 1
     },
     {
       "id": 6,

@@ -266,12 +266,7 @@ const isTop = () => {
     <!-- 過去トレーニング表示 -->
     <div class="training-box" v-if="trainings.length">
       <h3>前回の記録</h3>
-      <div class="row">
-        <label>
-          <input type="checkbox" v-model="isFetchAllSets" />
-          前回日の全セットを表示
-        </label>
-      </div>
+
       <div v-for="t in trainings" :key="t.id" class="row">
         <div>日付：{{ toJST(t.training_date) }}</div>
         <div>セット：{{ t.sets }}</div>
@@ -552,5 +547,4 @@ textarea {
   font-size: 16px;
   line-height: 1.6;
 }
-
 </style>

@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 import TraningView from '@/compornents/TraningView.vue'
 
 const isMode = ref(false)
 const username = ref('')
+provide('username', username) // ←これが必要
 const isEntered = ref(false)
 const currentMode = ref('training') // 'training' or 'graph'
 
